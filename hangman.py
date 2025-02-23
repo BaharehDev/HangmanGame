@@ -29,17 +29,19 @@ word_length = len(random_word)
 empty_word = ["_"] * word_length
 
 # -------------------------------------------------------
-
+#Alphabet letters
 alphabet_letters = string.ascii_lowercase
 
 def send_letter():
     global empty_word
 
+    #Create an input field
     input_letter = entry.get().lower()
     message_col.insert_one({"text": input_letter})
     print(random_word)  # just for guiding to save time for coding
     entry.delete(0, tk.END)
 
+    #if the letter is more than one letter or is not alphabet
     if len(input_letter) > 1 or not input_letter.isalpha():
         message = tk.Label(root, text="Please type a single letter")
         message.grid(row=5, column=5, pady=10)
@@ -47,12 +49,14 @@ def send_letter():
 
     correct_guess = False
 
+    ## Check all letters
     for c, letter in enumerate(random_word):
 
         if input_letter == letter:
-            empty_word[c] = letter
+            empty_word[c] = letter # Replace the correct letter
             correct_guess = True
 
+        # Display updated word
         myLabel3 = tk.Label(root, text=" ".join(empty_word), font=("Arial", 12))
         myLabel3.grid(row=5, column=0, columnspan=6, pady=10)
 
@@ -62,7 +66,7 @@ def send_letter():
             message = tk.Label(root, text="Wrong guess", fg="red")
         message.grid(row=5, column=5, pady=10)
 
-        # Check for win condition
+        # Check if user win
         if "_" not in empty_word:
             win_message = tk.Label(root, text="You won!", fg="blue", font=("Arial", 14))
             win_message.grid(row=6, column=0, columnspan=6, pady=10)
