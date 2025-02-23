@@ -46,7 +46,30 @@ category_label = tk.Label(root, text="Category: " + random_category, font=("MV B
 category_label.grid(row=4, column=0, columnspan=6, pady=30, padx=50)
 
 
+# Hangman Canvas
+canvas = tk.Canvas(root, width=200, height=250)
+canvas.grid(row=6, column=0, columnspan=6, pady=20)
+
+# Draw Hangman Base
+canvas.create_line(50, 200, 150, 200, width=3) # Base
+canvas.create_line(100, 200, 100, 50, width=3) # Pole
+canvas.create_line(100, 50, 150, 50, width=3) # Top Bar
+canvas.create_line(150, 50, 150, 70, width=3) # Rope
+
+# Hangman parts
+hangman_parts = [
+    canvas.create_oval(135, 70, 165, 100, width=3, state='hidden'), # Head
+    canvas.create_line(150, 100, 150, 150, width=3, state='hidden'), # Body
+    canvas.create_line(150, 110, 130, 130, width=3, state='hidden'), # Left Arm
+    canvas.create_line(150, 110, 170, 130, width=3, state='hidden'), # Right Arm
+    canvas.create_line(150, 150, 130, 180, width=3, state='hidden'), # Left Leg
+    canvas.create_line(150, 150, 170, 180, width=3, state='hidden') # Right Leg
+]
+
+wrong_guesses = 0
+
 def send_letter():
+    global wrong_guesses
     input_letter = entry.get().lower()
     entry.delete(0, tk.END)  # Clear entry field
     message_col.insert_one({"text": input_letter})  # Save to database
@@ -61,13 +84,19 @@ def send_letter():
                 empty_word[i] = letter
         message_label.config(text="Correct guess!", fg="gray")
     else:
+        wrong_guesses += 1
         message_label.config(text="Wrong guess!", fg="gray")
+
+        if wrong_guesses <= 6:
+            canvas.itemconfig(hangman_parts[wrong_guesses - 1], state='normal')
 
     word_display.config(text=" ".join(empty_word))
 
     if "_" not in empty_word:
         message_label.config(text="You won!", fg="gray")
 
+    if wrong_guesses == 6:
+        message_label.config(text=f"Game Over! The word was '{random_word}'", fg="black")
 
 send_button = tk.Button(root, text="Send", height=2, width=10, command=send_letter)
 send_button.grid(row=2, column=0, pady=5, padx=3)
